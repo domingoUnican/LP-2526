@@ -1,0 +1,16 @@
+(* COMMENT, STRING, ERROR[unmatched close comment], STRING *)
+
+(*
+  "(*"
+   *)"
+*) Estos son comentarios anidados
+
+
+
+"(*" String
+
+*) Esto es el error de cerrar comentario sin abrirlo
+
+
+"*)(*" String
+

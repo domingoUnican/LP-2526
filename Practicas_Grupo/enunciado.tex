@@ -1,0 +1,368 @@
+\documentclass{article}
+\pagestyle{empty}
+
+\usepackage{amsmath}
+\usepackage{mathspec}
+\usepackage{nicefrac}
+\usepackage{syntax}
+%fontspec
+%\setmainfont%[SmallCapsFont={Linux Biolinum Capitals O}]%
+%{TeX Gyre Pagella}
+%\def\paragriego{Anaktoria}
+% \def\paragriego{GFS Complutum}
+%\setmonofont{Terminus (TTF)}
+%           [BoldFont={TerminusTTF-Bold}]
+%\setmathsfont(Digits,Latin,Greek){Neo Euler}
+\usepackage[a4paper, text={15.5cm, 25cm}]{geometry}
+\addtolength\parskip{3mm}
+
+\usepackage{amssymb}
+\usepackage{pagecolor}
+\usepackage{pbox}
+\usepackage{graphicx}
+\usepackage{fancyvrb}
+\usepackage[lined,spanish]{algorithm2e}
+
+\setlength\parindent{0pt}
+
+\usepackage[hang,flushmargin]{footmisc}
+
+\newcommand\id{\mbox{indeg}}
+\newcommand\od{\mbox{outdeg}}
+
+\newcommand\N{\mathbb{N}}
+\newcommand\Z{\mathbb{Z}}
+\newcommand\Q{\mathbb{Q}}
+
+\newcommand\ret{↵\ } % ⏎, 〈RET〉
+
+\newcommand\tr{^{\mbox{\footnotesize t}}}   % transpuesta
+
+\definecolor{morado}{RGB}{85, 39, 107}
+\definecolor{naranja_muy}{RGB}{255, 156, 59} % (1, .612, .231)
+\definecolor{naranja_osc}{RGB}{255, 191, 128} % (1, .749, .501)
+\definecolor{naranja_claro}{RGB}{255, 229, 204} % (1, .898, .8)
+\definecolor{marca}{RGB}{242, 140, 113}
+
+\newcommand\inp[1]{\colorbox{gray!40}{#1}} % ¿Sobra espacio a la izquierda?
+\newcommand\mrc{\color{marca!90!black}}
+
+\usepackage{stmaryrd}       % flecha
+
+%% \usepackage{marginnote}
+%% \reversemarginpar
+
+\newcounter{pregunta}
+\newcommand\prop[1]%
+{\addtocounter{pregunta}{1}
+\noindent%\marginnote
+{\color{naranja_muy}\small\bf\thepregunta)}
+%{$\rightarrowtriangle$}\ %
+\parbox[t]{.95\linewidth}{\it #1}}
+
+\usepackage[colorlinks=true, urlcolor=blue]{hyperref}
+
+\usepackage{array}
+% alineada a la derecha, anchura fija
+\newcolumntype{R}[1]{>{\raggedright\arraybackslash}m{#1}}
+\newcolumntype{C}{>{$}c<{$}}
+\newcolumntype{M}[1]
+{>{\centering\arraybackslash $}m{#1}<{$}}
+
+% Para las flechas en tablas...
+\usepackage{tikz}
+\usetikzlibrary{tikzmark}
+\usetikzlibrary{arrows}
+
+\newcommand\aparte[1]{%
+\hfill%{\color{black!60}\vline}\quad
+\begin{minipage}[t]{.9\linewidth}%
+\color{black!80!blue}\small #1
+\end{minipage}}
+
+\def\adentro#1{\hspace{.05\linewidth}
+  \parbox{.8\linewidth}{\small #1}}
+
+\XeTeXdashbreakstate = 0
+
+\usepackage{xstring}
+\usepackage{ifthen}
+\usepackage{xifthen}
+
+\usepackage{tcolorbox}
+\newtcolorbox{resalte}[1][]%
+{coltitle=black,
+arc=3pt, colback=naranja_claro,
+top=3mm, bottom=3mm, left=3mm, right=3mm,
+colframe=naranja_osc, boxrule=1pt,
+left skip=0pt, right skip=4cm, #1}
+%segmentation style={solid}}
+%segmentation engine=empty}
+%segmentation style={double=white}}
+
+\newtcolorbox{resalte_chico}[1][]%
+{arc=3pt, colback=naranja_claro,
+top=1mm, bottom=1mm, left=1mm, right=3mm,
+colframe=naranja_osc, boxrule=1pt,
+left skip=0pt, right skip=4cm, #1}
+
+\newtcbox{resaltelinea}[1][]%
+{tcbox raise base, nobeforeafter,
+coltitle=black,
+arc=3pt, colback=naranja_claro,
+top=1mm, bottom=1mm, left=1mm, right=0pt,
+colframe=naranja_osc, boxrule=1pt,
+#1}
+
+\newtcbox{resalteajustado}[1][]%
+{tcbox raise base, nobeforeafter,
+coltitle=black,
+arc=3pt, colback=naranja_claro,
+top=0mm, bottom=0mm, left=0pt, right=0pt,
+colframe=naranja_osc, boxrule=1pt,
+#1}
+
+\newcommand\respuestas{{\color{naranja_muy}\bf Respuestas}
+\vspace{5mm}}
+
+\newcommand\figs{../figs}
+\newcommand\cod{../scripts}
+\newcommand\grf{../grafos}
+
+\newcommand\espacio{␣}
+\newcommand\vacio{\mbox{\fontspec{FreeSerif}∅}}
+
+\pagecolor{morado!10} % 238, 233, 240 (.933, .914, .941)
+
+\def\truca
+{~\par}
+\def\trucavuelve
+{~\par\vspace{-\baselineskip}}
+
+\usepackage[spanish]{babel}
+\usepackage{colortbl}
+
+\newcommand\gr{\color{gray}}
+
+\usepackage{diagbox}
+\usepackage{scalerel}
+\usepackage{multirow}
+
+\usepackage{eso-pic}
+
+\def\msi{\color{naranja_muy}{\fontspec{FreeSerif}✓}}
+\def\mno{{\fontspec{FreeSerif}✗}}
+
+\def\pyt{{\color{naranja_muy}\texttt{>>>}}}
+\def\pyc{{\color{naranja_muy}\texttt{...}}}
+\def\sh{{\color{naranja_muy}\texttt{\$}}\hspace{-1em} }
+\def\shc{{\color{naranja_muy}\texttt{>}}}
+\def\sg{{\color{naranja_muy}\texttt{sage:}}}
+\def\sgc{{\color{naranja_muy}\texttt{....:}}}
+\def\bl#1{{\color{black!50!blue}\texttt{#1}}}
+\def\ro#1{{\color{red!80!black}\texttt{#1}}}
+
+\begin{document}
+\shorthandoff{>}\shorthandoff{<}
+
+Esta práctica consistirá en generar un prototipo de las dos primeras etapas de un intérprete (analizador léxico y sintáctico) para el lenguaje COOL.
+
+\vspace{5mm}\centerline{\large\bf Análizador léxico («lexing»)}\vspace{5mm}
+\label{sec:orgdbd8459}
+
+%El análisis léxico consiste en dividir una cadena de caracteres en
+%objetos llamados «tokens», que son las unidades mínimas de un lenguaje de programación con significado  propio. En el fichero ejercicio1 hay la
+%implementación de un pequeño analizador léxico. 
+%
+%Ejecutando el código, el programa imprime por pantalla:
+%\begin{verbatim}
+%('ID', 'abc')
+%('SPACE', ' ')
+%('NUMBER', '123')
+%('SPACE', ' ')
+%('ID', 'cde')
+%('SPACE', ' ')
+%('NUMBER', '456')
+%\end{verbatim}
+%
+%\prop{En muchos lenguajes de programación, los espacios y saltos de linea son ignorados. Modifique el fichero para que se ignoren estos tokens.}
+%\label{sec:org947176e}
+%
+%Si se cambia la variable «text» de la siguiente manera
+%\begin{verbatim}
+%text = 'abc 123 ! cde 456'
+%\end{verbatim}
+%El programa imprime el siguiente error: 
+%\begin{verbatim}
+%('ID', 'abc')
+%('NUMBER', '123')
+%Traceback (most recent call last):
+%  File "ex1.py", line 29, in <module>
+%   for tok in tokenize(text):
+%  File "ex1.py", line 25, in tokenize
+%    raise SyntaxError('Bad char \%r' \% text[index])
+%SyntaxError: Bad char '!'
+%\end{verbatim}
+%
+%\prop{Notesé que, tal como está programado, el analizador lanza una excepción y acaba su ejecución cuando aparece un caracter no previsto. Modifique el fichero para que imprima un mensaje  cada vez que encuentra un carácter desconocido y continue la ejecución.}
+%\label{sec:org35c2c51}
+
+Aunque es posible escribir analizadores léxicos en cualquier lenguaje, existen multitud de herramientos que generan código muy eficiente.  En esta primera parte de la práctica vamos a  «tokenizar» utilizando la  \href{https://sly.readthedocs.io/en/latest/sly.html}{libreria SLY}. El lenguaje objetivo es el lenguaje
+\href{https://theory.stanford.edu/~aiken/software/cool/cool-manual.pdf}{COOL} (Classroom Object Oriented Language).
+El lenguaje COOL es un lenguaje diseñado para ser fácil escribir un compilador, tal es el caso que se calcula que hay más compiladores para el lenguaje COOL que programas escritos en este lenguaje.
+En el siguiente \href{https://nathanfriend.io/cooltojs/}{link está un transpilador para javascript}.
+En la siguiente sección daremos un resumen de los tokens del lenguaje y comportamiento esperado del compilador.
+
+\vspace{5mm}\centerline{\large\bf Especificación léxica básica}\vspace{5mm}
+\label{sec:org5f7cbf4}
+
+Las unidades léxicas del lenguaje «Cool» con el correspondiente nombre de token son:
+\begin{itemize}
+\item enteros (INT\_CONST)
+\item identificadores de tipos (TYPEID)
+\item identificadores de objetos (OBJECTID)
+\item notación especial,
+  \begin{itemize}
+  \item LE (<=)
+  \item DARROW (=>)
+  \item ASSIGN (<-)
+  \end{itemize}
+\item «strings» (STR_CONST)
+\item palabras reservadas (IF, FI, THEN,
+                          NOT, IN, CASE,ELSE,
+                          ESAC, CLASS, INHERITS,
+                          ISVOID, LET, LOOP, NEW, OF, POOL,
+                           THEN, WHILE, TRUE, FALSE)
+\item espacios
+\item símbolos literales (==, +, -, *, /, (, ), <, >, ., ~, ,, ;, :, @, {, } )
+\end{itemize}
+
+Los enteros son cadenas de caracteres formadas por dígitos. Los
+identificadores consisten en cadenas de caracteres formadas por
+letras, números y el guión bajo. Los identificadores de tipos empiezan
+por una letra mayúscula y los identificadores de objetos empiezan por
+una letra minúscula. % Hay dos identificadores especiales que en las
+% próximas prácticas tendrán un tratamiento especial: \textbf{\textbf{self}} y
+% \textbf{\textbf{SELF\_TYPE}}.
+
+
+Los «strings» están delimitados por comillas dobles. Dentro de un
+«string», la regla general es que  $\backslash c$ se sustituye por el
+carácter $c$.  
+Las siguientes excepciones no se les debe quitar la contrabarra:
+
+\begin{itemize}
+\item $\backslash b$, además es la representación del carácter «backspace»
+\item $\backslash t$, además es la representación del carácter «tab»
+\item $\backslash n$, además es la representación del carácter salto de linea
+\item $\backslash r$, además es la representación del carácter retorno de carro
+\end{itemize}
+
+El carácter salto de linea y las comillas  no pueden aparecer en un string, a menos que
+estén escapados. Tampoco puede encontrar ni los caracteres de fin de
+fichero y el carácter $\backslash 0$.
+
+El límite de longitud de una cadena de caracteres es de 1024 caracteres.
+
+Hay dos formas de escribir un comentario en un fichero, utilizando
+$--$ \emph{comentarios de linea} y  encerrándolo  entre los símbolos $(*$ y
+$*)$. Los comentarios de varias lineas pueden estar anidados, por lo
+que hay que contar aquellos el número de elementos de cierre. Notad
+que los comentarios de cierre se pueden escapar, pero entonces no
+cuentan como cierre de comentario.
+
+Las palabras reservadas  pueden estar en mayúscula y minúscula, menos
+la palabras \textbf{true} y \textbf{false} que deben empezar por minúscula para ser tokens del tipo \emph{BOOL\_CONST}, ya que si no se cumple esto, deben ser tratados como identificadores de tipos. 
+
+\prop{Programe un analizar léxico, de forma que todos los archivos de ejemplo sean analizados y sigan la implementación base modificando únicamente el archivo Lexer.py}
+\label{sec:org7564041}
+
+
+
+\vspace{5mm}\centerline{\large\bf Análizador sintáctico («parser»)}\vspace{5mm}
+\label{sec:orgdbd8459}
+
+
+Con los tokens definidos, es necesario especificar el lenguaje COOL mediante una gramática libre de contexto. La siguiente gramática esta especificada utilizando la notación EBNF (notación extendida Backus-Naur).
+
+La Notación de Backus-Naur extendida, también conocida como EBNF (del inglés Extended Backus–Naur Form), es un metalenguaje utilizado para expresar gramáticas libres de contexto). Es una extensión de la Notación de Backus-Naur.
+
+Las variables están escritas entre ángulos y los tokens están en negrita.
+Además, se utiliza símbolos propios, que recuerdan a las expresiones regulares como
+\begin{itemize}
+\item $*$ para representar 0 o más veces la expresión anterior
+\item $+$ para representar 1 o más veces la expresión anterior
+\item $|$ para representar la elección entre dos expresiones
+\item las expresiones entre corchetes son opcionales
+\item los paréntesis sirven para delimitar las expresiones
+\end{itemize}
+\begin{grammar}
+<Programa> ::= <Clase>+
+
+<Clase> ::= "CLASS" "TYPEID" ["inherits" "TYPEID"] "{" (<Atributo> | <Metodo> )* "}" ";"
+
+
+<Atributo> ::= "OBJECTID" ":" "TYPEID" ["ASSIGN" <Expresion>]";"
+
+<Metodo> ::=  "OBJECTID" "("  ")" ":" "TYPEID" "{" <Expresion> "}" ";"
+\alt "OBJECTID" "(" (<Formal>  "," )* <Formal>  ")" ":" "TYPEID" "{" <Expresion> "}" ";"
+
+<Formal> ::= "OBJECTID" ":" "TYPEID"
+
+<Expresion> ::= "OBJECTID" "ASSIGN" <Expresion>
+\alt <Expresion> "+" <Expresion>
+\alt <Expresion> "-" <Expresion>
+\alt <Expresion> "*" <Expresion>
+\alt <Expresion> "/" <Expresion>
+\alt <Expresion> "<" <Expresion>
+\alt <Expresion> "<=" <Expresion>
+\alt <Expresion> "=" <Expresion>
+\alt "(" <Expresion> ")"
+\alt "NOT" <Expresion>
+\alt "ISVOID" <Expresion>
+\alt "~" <Expresion>
+\alt <Expresion> "@" "TYPEID" "." "OBJECTID" "(" ")"
+\alt <Expresion> "@" "TYPEID" "." "OBJECTID" "(" (<Expresion> ",")* <Expresion> ")"
+\alt [ <Expresion> "."] "OBJECTID" "(" (<Expresion> ",")* <Expresion> ")"
+\alt [ <Expresion> "."] "OBJECTID" "(" ")"
+\alt "IF" <Expresion> "THEN" <Expresion> "ELSE" <Expresion> "FI"
+\alt "WHILE" <Expresion> "LOOP" <Expresion> "POOL"
+\alt "LET" "OBJECTID" ":" "TYPEID" ["<-" <Expresion>] ("," "OBJECTID" ":" "TYPEID" ["<-" <Expresion>])* "IN" <Expresion>
+\alt "CASE" <Expresion> "OF" ("OBJECTID" ":" "TYPEID" "DARROW" "<Expresion>")+ ";" "ESAC"
+\alt "NEW" "TYPEID"
+\alt "{" (<Expresion> ";") + "}"
+\alt "OBJECTID"
+\alt "INT_CONST"
+\alt "STR_CONST"
+\alt "BOOL_CONST"
+
+
+\end{grammar}
+
+La clase \emph{Parser} de la librería SLY proporciona un generador de analizadores sintácticos. Para la realización de un analizador sintáctico que \textbf{solo compruebe que una entrada está en el lenguaje} es necesario que cada regla no devuelva nada.
+
+La gramática anterior es \emph{ambigüa}, ya que algunos operadores no tienen definida la precedencia.
+El manual de COOL fija la precedencia de las operaciones  de mayor a menor en este orden:
+\begin{itemize}
+\item .
+\item @
+\item ~ ISVOID * / + -
+  
+\item LE < = NOT
+  
+\item ASSIGN
+\end{itemize}
+Todas las operaciones binarias son asociativas a la izquierda, excepto la asignación, que es asociativa a la derecha, y las tres operaciones de comparación, que no se asocian.
+
+
+\prop{ Programe un analizador sintáctico utilizando la gramática anterior, teniendo en cuenta los tokens definidos en el analizador léxico. Para ello es necesario convertir la gramática a forma BNF  para que sea soportada en la librería SLY. Modifique solo el fichero Parser.py.
+}
+
+
+Cada variable está relacionada con una clase en el archivo Clase.py. Notad que la clase \emph{Expresion} tiene varias clases hijas, dependiendo de si la expresión representa una suma, o una multiplicación, un bloque de expresiones, etc.
+
+\prop{
+  Modifique el analizador anterior para que el analizador sintáctico devuelva un objeto de la clase Programa, si la entrada cumple la especificación dada por la gramática.
+}
+
+\end{document}
