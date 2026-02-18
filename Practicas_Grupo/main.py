@@ -1,8 +1,8 @@
 import os
 import re
 import sys
-from colorama import init
-from termcolor import colored
+# from colorama import init  ## Para colorear la salida en la terminal
+# from termcolor import colored ## Para colorear la salida en la terminal
 init()
 
 
