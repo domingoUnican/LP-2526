@@ -9,6 +9,9 @@ class MatchingString(Lexer):
     tokens = {}
     @_(r'\t')
     def TAB(self, t):
+        if len(self.str_buf) + len('\\t') > 1024:
+            self.begin(CoolLexer)
+            return thats_a_long_string(t)
         self.str_buf += '\\t'
     @_(r'\r?\n')
     def NOT_ESCAPED(self, t):
@@ -17,22 +20,38 @@ class MatchingString(Lexer):
         return t
     @_(r'\\\r?\n')
     def CONTINUE_IN_NEW_LINE(self, t):
+        if len(self.str_buf) + len("\\n") > 1024:
+            self.begin(CoolLexer)
+            return thats_a_long_string(t)
         self.lineno += 1 #siguiente linea
         self.str_buf += "\\n"
     @_(r'\\[nbtf"]')
     def ESCAPE_ESPECIAL(self,t):
+        if len(self.str_buf) + len(t.value) > 1024:
+            self.begin(CoolLexer)
+            return thats_a_long_string(t)
         self.str_buf += t.value # los caracteres especiales
     @_(r'\\\\')
     def ESCAPE_BACKLASH(self,t):
+        if len(self.str_buf) + len(t.value) > 1024:
+            self.begin(CoolLexer)
+            return thats_a_long_string(t)
         self.str_buf += t.value
     @_(r'\\.')
     def ESCAPE(self, t):
+        if len(self.str_buf) + len(t.value[1]) > 1024:
+            self.begin(CoolLexer)
+            return thats_a_long_string(t)
         self.str_buf += t.value[1]
     @_(r'\"')
     def CLOSE_STRING(self, t):
+        if len(self.str_buf) + len(t.value) > 1024:
+            self.begin(CoolLexer)
+            return thats_a_long_string(t)
         t.value = self.str_buf + "\""
         t.type = "STR_CONST"
         self.str_buf = "\""
+        self.char_count = 0
         self.begin(CoolLexer) # volvemos al lexer
         return t
     @_(r'\0')
@@ -43,7 +62,16 @@ class MatchingString(Lexer):
         self.lineno += 1
     @_(r'[^\\\"\n\t]+')
     def CHARACTER(self, t):
+        if len(self.str_buf) + len(t.value) > 1024:
+            self.begin(CoolLexer)
+            return thats_a_long_string(t)
         self.str_buf += t.value
+
+def thats_a_long_string(t):
+    t.type = "ERROR"
+    t.value = "\"String constant too long\""
+    return t
+
 
 class Comentario(Lexer):
     tokens = {}
@@ -77,6 +105,13 @@ class CoolLexer(Lexer):
     LET = r'\b[lL][eE][tT]\b'
     LOOP = r'\b[lL][oO][oO][pP]\b'
     POOL = r'\b[pP][oO][oO][lL]\b'
+    IN = r'\b[iI][nN]\b'
+    CASE = r'\b[cC][aA][sS][eE]\b'
+    ESAC = r'\b[eE][sS][aA][cC]\b'
+    INHERITS = r'\b[iI][nN][hH][eE][rR][iI][tT][sS]\b'
+    NEW = r'\b[nN][eE][wW]\b'
+    OF = r'\b[oO][fF]\b'
+    
 
     @_(r'_')
     def ERROR_UNDERSCORE(self,t):
