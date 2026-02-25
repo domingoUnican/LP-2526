@@ -146,6 +146,12 @@ class CoolLexer(Lexer):
         t.value = (t.value) + 'dddd'
         return t
     
+    @_(r'\*\)')
+    def UNMATCHED_COMMENT(self, t):
+        t.type = 'ERROR'
+        t.value = "\"Unmatched *)\""
+        return t
+    
     @_(r'\w+')
     def TYPEID(self, t):
         return t
