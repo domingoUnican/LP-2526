@@ -78,6 +78,12 @@ class CoolLexer(Lexer):
     LOOP = r'\b[lL][oO][oO][pP]\b'
     POOL = r'\b[pP][oO][oO][lL]\b'
 
+    @_(r'_')
+    def ERROR_UNDERSCORE(self,t):
+        t.type = "ERROR"
+        t.value = f"\"{t.value}\""
+        return t
+
     @_(r't[rR][uU][eE]\b|f[aA][lL][sS][eE]\b')
     def BOOL_CONST(self,t):
         t.type = "BOOL_CONST"
@@ -145,7 +151,7 @@ class CoolLexer(Lexer):
         return t
 
     @_(r'.')
-    def ERROR(self, t):
+    def LITERALS(self, t):
         if str(t.value) in self.literals:
             t.type = str(t.value)
             t.value = ""
