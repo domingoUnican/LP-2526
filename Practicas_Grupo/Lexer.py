@@ -7,6 +7,9 @@ import sys
 
 class MatchingString(Lexer):
     tokens = {}
+    @_(r'\t')
+    def TAB(self, t):
+        self.str_buf += '\\t'
     @_(r'\r?\n')
     def NOT_ESCAPED(self, t):
         t.type = "ERROR"
@@ -17,7 +20,7 @@ class MatchingString(Lexer):
         self.lineno += 1 #siguiente linea
         self.str_buf += "\\n"
     @_(r'\\[nbtf"]')
-    def ESCAPE_ESPECIAL(self,t): 
+    def ESCAPE_ESPECIAL(self,t):
         self.str_buf += t.value # los caracteres especiales
     @_(r'\\\\')
     def ESCAPE_BACKLASH(self,t):
@@ -38,10 +41,9 @@ class MatchingString(Lexer):
     @_(r'\n')
     def NEW_LINE(self, t):
         self.lineno += 1
-    @_(r'[^\\\"\n]+')
+    @_(r'[^\\\"\n\t]+')
     def CHARACTER(self, t):
         self.str_buf += t.value
-    
 
 class Comentario(Lexer):
     tokens = {}
@@ -70,6 +72,11 @@ class CoolLexer(Lexer):
     FI = r'\b[fF][iI]\b'
     THEN = r'\b[tT][hH][eE][nN]\b'
     CLASS = r'\b[cC][lL][aA][sS][sS]\b'
+    NOT = r'\b[nN][oO][tT]\b'
+    ISVOID = r'\b[iI][sS][vV][oO][iI][dD]\b'
+    LET = r'\b[lL][eE][tT]\b'
+    LOOP = r'\b[lL][oO][oO][pP]\b'
+    POOL = r'\b[pP][oO][oO][lL]\b'
 
     @_(r't[rR][uU][eE]\b|f[aA][lL][sS][eE]\b')
     def BOOL_CONST(self,t):
