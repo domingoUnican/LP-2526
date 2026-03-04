@@ -13,6 +13,21 @@ class MatchingString(Lexer):
             self.begin(CoolLexer)
             return thats_a_long_string(t)
         self.str_buf += '\\t'
+    @_(r'[\\x08\\x0c\\x0d\x1b]')
+    def TINY_CHARS(self, t):
+        mapping = {
+            '\\x08': r'\b',
+            '\\x0c': r'\f',
+            '\\x0d': r'\015',
+            '\x1b': r'\033'
+        }
+        print("hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh: ", t.value)
+        #val = mapping.get(t.value)
+        #if len(self.str_buf) + len(val) > 1024:
+        #    self.begin(CoolLexer)
+        #    return thats_a_long_string(t)
+        #self.str_buf += val
+
     @_(r'\r?\n')
     def NOT_ESCAPED(self, t):
         t.type = "ERROR"
@@ -60,7 +75,7 @@ class MatchingString(Lexer):
     @_(r'\n')
     def NEW_LINE(self, t):
         self.lineno += 1
-    @_(r'[^\\\"\n\t]+')
+    @_(r'[^\\\"\n\t\x08\x0c\x0d\x1b]+')
     def CHARACTER(self, t):
         if len(self.str_buf) + len(t.value) > 1024:
             self.begin(CoolLexer)
