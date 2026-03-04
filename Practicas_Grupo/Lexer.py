@@ -13,20 +13,37 @@ class MatchingString(Lexer):
             self.begin(CoolLexer)
             return thats_a_long_string(t)
         self.str_buf += '\\t'
-    @_(r'[\\x08\\x0c\\x0d\x1b]')
-    def TINY_CHARS(self, t):
+    @_(r'[\x00-\x1f\x7f]')
+    def CONTROL_CHARS(self, t):
+        # Esta regla atrapa cualquier caracter de control ASCII (0-31 y 127)
+        # que no haya sido atrapado antes (como el \n o el \t que tienen sus propias reglas)
+        
+        # Mapeo específico de los caracteres que Cool pide de cierta forma
         mapping = {
-            '\\x08': r'\b',
-            '\\x0c': r'\f',
-            '\\x0d': r'\015',
-            '\x1b': r'\033'
+            '\x08': r'\b',    # Backspace
+            '\x0c': r'\f',    # Formfeed
+            '\x0d': r'\015',  # Carriage return
+            '\x1b': r'\033',  # Escape
         }
-        print("hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh: ", t.value)
-        #val = mapping.get(t.value)
-        #if len(self.str_buf) + len(val) > 1024:
-        #    self.begin(CoolLexer)
-        #    return thats_a_long_string(t)
-        #self.str_buf += val
+        
+        val = mapping.get(t.value)
+        
+        # Si no está en el mapeo explícito, lo ignoramos o manejamos distinto, 
+        # pero para estos test de Cool, esto debería bastar.
+        if val is None:
+            # Si encuentras un caracter nulo (\0), en Cool es un error dentro de un string
+            if t.value == '\x00':
+                t.type = "ERROR"
+                t.value = '"String contains null character."'
+                self.begin(CoolLexer)
+                return t
+            val = repr(t.value)[1:-1] # Fallback genérico
+
+        if len(self.str_buf) + len(val) > 1024:
+            self.begin(CoolLexer)
+            return thats_a_long_string(t)
+            
+        self.str_buf += val
 
     @_(r'\r?\n')
     def NOT_ESCAPED(self, t):
@@ -54,10 +71,31 @@ class MatchingString(Lexer):
         self.str_buf += t.value
     @_(r'\\.')
     def ESCAPE(self, t):
-        if len(self.str_buf) + len(t.value[1]) > 1024:
+        char = t.value[1]
+        
+        # Mapeo para caracteres de control que vienen escapados con una barra (\)
+        mapping = {
+            '\t': r'\t',      # <--- ¡AQUÍ ESTÁ LA MAGIA PARA EL TAB!
+            '\x08': r'\b',    # Escaped Backspace
+            '\x0c': r'\f',    # Escaped Formfeed
+            '\x0d': r'\015',  # Escaped Carriage return
+            '\x1b': r'\033',  # Escaped Escape
+        }
+        
+        val = mapping.get(char, char)
+        
+        # Si es un nulo escapado, en Cool es error
+        if char == '\x00':
+            t.type = "ERROR"
+            t.value = '"String contains null character."'
+            self.begin(CoolLexer)
+            return t
+
+        if len(self.str_buf) + len(val) > 1024:
             self.begin(CoolLexer)
             return thats_a_long_string(t)
-        self.str_buf += t.value[1]
+            
+        self.str_buf += val
     @_(r'\"')
     def CLOSE_STRING(self, t):
         if len(self.str_buf) + len(t.value) > 1024:
@@ -75,7 +113,7 @@ class MatchingString(Lexer):
     @_(r'\n')
     def NEW_LINE(self, t):
         self.lineno += 1
-    @_(r'[^\\\"\n\t\x08\x0c\x0d\x1b]+')
+    @_(r'[^\x00-\x1f\x7f\\\"\n]+')
     def CHARACTER(self, t):
         if len(self.str_buf) + len(t.value) > 1024:
             self.begin(CoolLexer)
