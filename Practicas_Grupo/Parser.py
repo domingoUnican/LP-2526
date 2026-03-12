@@ -13,16 +13,16 @@ class CoolParser(Parser):
     debugfile = "salida.out"
     errores = []
 
-    @_("Clase ';'")
+    @_("Clase")
     def Programa(self, p):
         pass
 
     
-    @_("Programa Clase ';'")
+    @_("Programa Clase")
     def Programa(self, p):
         pass
     
-    @_("CLASS TYPEID hereda '{'serie_atr_met '}'") 
+    @_("CLASS TYPEID hereda '{'serie_atr_met '}' ';'") 
     def Clase(self, p):
         pass
 
@@ -34,4 +34,32 @@ class CoolParser(Parser):
     def serie_atr_met(self, p):
         pass
 
-    
+    @_("OBJECTID : TYPEID ';'", "OBJECTID : TYPEID ASSIGN expresion ';'")
+    def atributo(self, p):
+        pass
+
+    @_("OBJECTID ( ) : TYPEID \{ expresion \}", "OBJECTID ( formal_extra formal ) : TYPEID \{ expresion \}")
+    def metodo(self, p):
+        pass
+
+    @_("formal , formal_extra", "")
+    def formal_extra(self, p):
+        pass
+
+    @_("OBJECTID : TYPEID")
+    def formal(self, p):
+        pass
+
+    @_("OBJECTID ASSIGN expresion", "expresion + expresion", "expresion - expresion", 
+       "expresion * expresion", "expresion / expresion", "expresion < expresion", 
+       "expresion <= expresion", "expresion = expresion", "( expresion )", "NOT expresion",
+       "ISVOID expresion", "- expresion", "expresion @ TYPEID . OBJECTID ( )",
+       "expresion @ TYPEID . OBJECTID ( expresion_extra_1 expresion )",
+       "expresion . OBJECTID ( expresion_extra_1 expresion )", "OBJECTID ( expresion_extra_1 expresion )",
+       "expresion . OBJECTID ( )", "OBJECTID ( )", "IF expresion THEN expresion ELSE expresion FI",
+       "WHILE expresion LOOP expresion POOL", "LET OBJECTID : TYPEID expresion_extra_2 IN expresion",
+       "LET OBJECTID : TYPEID <- expresion expresion_extra_2 IN expresion",
+       "CASE expresion OF expresion_extra_3 ';' ESAC", "NEW TYPEID", 
+       "\{ expresion_extra_4 \}", "OBJECTID", "INT_CONST", "STR_CONST", "BOOL_CONST")
+    def expresion(self, p):
+        pass
