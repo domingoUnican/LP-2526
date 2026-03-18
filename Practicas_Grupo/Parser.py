@@ -31,7 +31,7 @@ class CoolParser(Parser):
         prog = Clase(nombre=p.TYPEID, padre=p.hereda, nombre_fichero=self.nombre_fichero, caracteristicas=p.serie_atr_met)
         return prog
 
-    @_("", "INHERITS TYPEID")
+    @_("", "INHERITS TYPEID") 
     def hereda(self, p):
         if len(p) == 0:
             return "Object"
