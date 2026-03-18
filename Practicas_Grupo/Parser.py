@@ -68,7 +68,7 @@ class CoolParser(Parser):
        "expresion '*' expresion", "expresion '/' expresion", "expresion < expresion", 
        "expresion DARROW expresion", "expresion '=' expresion", "'(' expresion ')'", "NOT expresion",
        "ISVOID expresion", "'-' expresion", "expresion '@' TYPEID '.' OBJECTID '(' ')'",
-       "expresion '@' TYPEID '.' OBJECTID ( expresion_extra_1 expresion )",
+       "expresion '@' TYPEID '.' OBJECTID '(' expresion_extra_1 expresion ')'",
        "expresion '.' OBJECTID ( expresion_extra_1 expresion )", "OBJECTID '(' expresion_extra_1 expresion ')'",
        "expresion '.' OBJECTID '(' ')'", "OBJECTID '(' ')'", "IF expresion THEN expresion ELSE expresion FI",
        "WHILE expresion LOOP expresion POOL", "LET OBJECTID : TYPEID expresion_extra_2 IN expresion",
