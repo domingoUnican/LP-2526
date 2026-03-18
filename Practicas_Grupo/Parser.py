@@ -52,7 +52,7 @@ class CoolParser(Parser):
 
     @_("OBJECTID ASSIGN expresion", "expresion + expresion", "expresion - expresion", 
        "expresion * expresion", "expresion / expresion", "expresion < expresion", 
-       "expresion <= expresion", "expresion = expresion", "( expresion )", "NOT expresion",
+       "expresion DARROW expresion", "expresion = expresion", "( expresion )", "NOT expresion",
        "ISVOID expresion", "- expresion", "expresion @ TYPEID . OBJECTID ( )",
        "expresion @ TYPEID . OBJECTID ( expresion_extra_1 expresion )",
        "expresion . OBJECTID ( expresion_extra_1 expresion )", "OBJECTID ( expresion_extra_1 expresion )",
