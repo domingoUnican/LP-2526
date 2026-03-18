@@ -63,3 +63,19 @@ class CoolParser(Parser):
        "\{ expresion_extra_4 \}", "OBJECTID", "INT_CONST", "STR_CONST", "BOOL_CONST")
     def expresion(self, p):
         pass
+
+    @_("expresion , expresion_extra_1", "")
+    def expresion_extra_1(self, p):
+        pass
+
+    @_(", OBJECTID : TYPEID expresion_extra_2", ", OBJECTID : TYPEID <- expresion expresion_extra_2", "")
+    def expresion_extra_2(self, p):
+        pass
+
+    @_("OBJECTID : TYPEID DARROW expresion expresion_extra_3", "OBJECTID : TYPEID DARROW expresion")
+    def expresion_extra_3(self, p):
+        pass
+
+    @_("expresion ; expresion_extra_4", "expresion ';'")
+    def expresion_extra_4(self, p):
+        pass
