@@ -15,50 +15,64 @@ class CoolParser(Parser):
 
     @_("Clase")
     def Programa(self, p):
-        pass
+        prog = Programa(secuencia=[p.Clase])
+        return prog
 
     
     @_("Programa Clase")
     def Programa(self, p):
-        pass
+        prog = Programa(secuencia=p.Programa.secuencia + [p.Clase])
+        return prog
+
+        
     
-    @_("CLASS TYPEID hereda '{'serie_atr_met '}' ';'") 
+    @_("CLASS TYPEID hereda '{' serie_atr_met '}' ';'") 
     def Clase(self, p):
-        pass
+        prog = Clase(nombre=p.TYPEID, padre=p.hereda, nombre_fichero=self.nombre_fichero, caracteristicas=p.serie_atr_met)
+        return prog
 
     @_("", "INHERITS TYPEID")
     def hereda(self, p):
-        pass
+        if len(p) == 0:
+            return "Object"
+        else:
+            return p.TYPEID
 
     @_("", "atributo", "metodo", "serie_atr_met atributo", "serie_atr_met metodo")
     def serie_atr_met(self, p):
-        pass
-
-    @_("OBJECTID : TYPEID ';'", "OBJECTID : TYPEID ASSIGN expresion ';'")
+        if len(p) == 0:
+            return []
+        else:
+            return [p.atributo]  
+        
+    @_("OBJECTID ':' TYPEID ';'")#, "OBJECTID ':' TYPEID ASSIGN expresion ';'")
     def atributo(self, p):
-        pass
+        prog = Atributo(nombre=p.OBJECTID, tipo=p.TYPEID, cuerpo=p.expresion if len(p) == 6 else NoExpr())
+        return prog
 
-    @_("OBJECTID ( ) : TYPEID \{ expresion \}", "OBJECTID ( formal_extra formal ) : TYPEID \{ expresion \}")
+    @_("OBJECTID '(' ')' ':' TYPEID '{' '}'") #"OBJECTID ( formal_extra formal ) : TYPEID '{' expresion '}'")
     def metodo(self, p):
-        pass
-
-    @_("formal , formal_extra", "")
+        prog = Metodo(nombre=p.OBJECTID, tipo=p.TYPEID, cuerpo=NoExpr())
+        return prog
+        
+"""
+    @_("formal ',' formal_extra", "")
     def formal_extra(self, p):
         pass
 
-    @_("OBJECTID : TYPEID")
+    @_("OBJECTID ':' TYPEID")
     def formal(self, p):
         pass
 
-    @_("OBJECTID ASSIGN expresion", "expresion + expresion", "expresion - expresion", 
-       "expresion * expresion", "expresion / expresion", "expresion < expresion", 
-       "expresion DARROW expresion", "expresion = expresion", "( expresion )", "NOT expresion",
-       "ISVOID expresion", "- expresion", "expresion @ TYPEID . OBJECTID ( )",
-       "expresion @ TYPEID . OBJECTID ( expresion_extra_1 expresion )",
-       "expresion . OBJECTID ( expresion_extra_1 expresion )", "OBJECTID ( expresion_extra_1 expresion )",
-       "expresion . OBJECTID ( )", "OBJECTID ( )", "IF expresion THEN expresion ELSE expresion FI",
+    @_("OBJECTID ASSIGN expresion", "expresion '+' expresion", "expresion '-' expresion", 
+       "expresion '*' expresion", "expresion '/' expresion", "expresion < expresion", 
+       "expresion DARROW expresion", "expresion '=' expresion", "'(' expresion ')'", "NOT expresion",
+       "ISVOID expresion", "'-' expresion", "expresion '@' TYPEID '.' OBJECTID '(' ')'",
+       "expresion '@' TYPEID '.' OBJECTID ( expresion_extra_1 expresion )",
+       "expresion '.' OBJECTID ( expresion_extra_1 expresion )", "OBJECTID '(' expresion_extra_1 expresion ')'",
+       "expresion '.' OBJECTID '(' ')'", "OBJECTID '(' ')'", "IF expresion THEN expresion ELSE expresion FI",
        "WHILE expresion LOOP expresion POOL", "LET OBJECTID : TYPEID expresion_extra_2 IN expresion",
-       "LET OBJECTID : TYPEID <- expresion expresion_extra_2 IN expresion",
+       "LET OBJECTID ':' TYPEID ASSIGN expresion expresion_extra_2 IN expresion",
        "CASE expresion OF expresion_extra_3 ';' ESAC", "NEW TYPEID", 
        "\{ expresion_extra_4 \}", "OBJECTID", "INT_CONST", "STR_CONST", "BOOL_CONST")
     def expresion(self, p):
@@ -78,4 +92,4 @@ class CoolParser(Parser):
 
     @_("expresion ; expresion_extra_4", "expresion ';'")
     def expresion_extra_4(self, p):
-        pass
+        pass"""
