@@ -43,28 +43,43 @@ class CoolParser(Parser):
         if len(p) == 0:
             return []
         else:
-            return [p.atributo]  
+            return [p.atributo] 
         
-    @_("OBJECTID ':' TYPEID ';'")#, "OBJECTID ':' TYPEID ASSIGN expresion ';'")
+    @_("OBJECTID ':' TYPEID ';'", "OBJECTID ':' TYPEID ASSIGN expresion ';'")
     def atributo(self, p):
         prog = Atributo(nombre=p.OBJECTID, tipo=p.TYPEID, cuerpo=p.expresion if len(p) == 6 else NoExpr())
         return prog
 
-    @_("OBJECTID '(' ')' ':' TYPEID '{' '}'") #"OBJECTID ( formal_extra formal ) : TYPEID '{' expresion '}'")
+    @_("OBJECTID '(' ')' ':' TYPEID '{' '}'")
     def metodo(self, p):
+
         prog = Metodo(nombre=p.OBJECTID, tipo=p.TYPEID, cuerpo=NoExpr())
         return prog
+    
+    @_("OBJECTID '(' formal_extra formal ')' ':' TYPEID '{' expresion '}'")
+    def metodo(self, p):
+
+        prog = Metodo(nombre=p.OBJECTID, formales=p.formales + [self.formal], tipo=p.TYPEID, cuerpo=p.expresion)
+        return prog
         
-"""
     @_("formal ',' formal_extra", "")
     def formal_extra(self, p):
-        pass
-
+        if len(p) == 0:
+            return []
+        else:
+            return [p.formal] + [p.formal_extra]
+        
     @_("OBJECTID ':' TYPEID")
     def formal(self, p):
-        pass
+        prog = Formal(nombre_variable=p.OBJECTID, tipo=p.TYPEID)
+        return prog
+    
+    @_("OBJECTID ASSIGN expresion")
+    def expresion(self, p):
+        return Asignacion(nombre=p.OBJECTID, cuerpo=p[2].expresion)
 
-    @_("OBJECTID ASSIGN expresion", "expresion '+' expresion", "expresion '-' expresion", 
+"""
+        "expresion '+' expresion", "expresion '-' expresion", 
        "expresion '*' expresion", "expresion '/' expresion", "expresion < expresion", 
        "expresion DARROW expresion", "expresion '=' expresion", "'(' expresion ')'", "NOT expresion",
        "ISVOID expresion", "'-' expresion", "expresion '@' TYPEID '.' OBJECTID '(' ')'",
@@ -77,7 +92,8 @@ class CoolParser(Parser):
        "\{ expresion_extra_4 \}", "OBJECTID", "INT_CONST", "STR_CONST", "BOOL_CONST")
     def expresion(self, p):
         pass
-
+"""
+"""
     @_("expresion , expresion_extra_1", "")
     def expresion_extra_1(self, p):
         pass
@@ -93,3 +109,15 @@ class CoolParser(Parser):
     @_("expresion ; expresion_extra_4", "expresion ';'")
     def expresion_extra_4(self, p):
         pass"""
+
+##### DOMINGO masterclass ####################
+"""
+# Sincronizarte cuando encuentres esta expresion, despues de haber entrado en error.
+@_("error '+' NUMBER"):
+def expr(self, p)
+    return 0 # Devuelve 0 y continua
+
+@_('NAME')
+def error(self, p):
+    print("hay error en el token", str(p))
+"""
