@@ -388,7 +388,7 @@ class String(Expresion):
     def str(self, n):
         resultado = super().str(n)
         resultado += f'{(n)*" "}_string\n'
-        resultado += f'{(n+2)*" "}{self.valor}\n'
+        resultado += f'{(n+2)*" "}"{self.valor}"\n'
         resultado += f'{(n)*" "}: {self.cast}\n'
         return resultado
     def Tipo(self, ambito):

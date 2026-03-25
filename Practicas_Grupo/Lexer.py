@@ -177,7 +177,7 @@ class CoolLexer(Lexer):
             t.value = f'#{self.lineno} ERROR "String constant too long"'
             return t
 
-        t.value = '"' + result + '"'
+        t.value = result
         return t
 
     # Enteros: preservar representación original (01, 0777, etc.)

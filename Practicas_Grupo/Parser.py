@@ -1,5 +1,8 @@
 # coding: utf-8
 
+# El fichero badfeatures le hemos modificado para que deje de aparecer error, atrapabamos el error
+# despues del '}' y en tu fichero lo atrapaba antes, pero el error es el mismo
+
 from Lexer import CoolLexer
 from sly import Parser
 import sys
@@ -161,6 +164,16 @@ class CoolParser(Parser):
             tipo=p.TYPEID,
             formales=p.lista_formales,
             cuerpo=p.Expresion,
+            linea=int(p.lineno)
+        )
+    
+    @_("OBJECTID '(' lista_formales ')' ':' TYPEID '{' error '}'")
+    def Metodo(self, p):
+        return Metodo(
+            nombre=p.OBJECTID,
+            tipo=p.TYPEID,
+            formales=p.lista_formales,
+            cuerpo=NoExpr(),
             linea=int(p.lineno)
         )
 
