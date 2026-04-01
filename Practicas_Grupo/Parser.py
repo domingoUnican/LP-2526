@@ -265,6 +265,13 @@ class CoolParser(Parser):
             casos=p.lista_ramas,
             linea=int(p.lineno)
         )
+    @_("CASE error OF lista_ramas ESAC")
+    def Expresion(self, p):
+        return Swicht(
+            expr=None,
+            casos=p.lista_ramas,
+            linea=int(p.lineno)
+        )
 
     # NEW
     @_("NEW TYPEID")
@@ -464,6 +471,9 @@ class CoolParser(Parser):
             cuerpo=p.Expresion,
             linea=int(p.lineno)
         )]
+    @_("OBJECTID error DARROW Expresion ';'")
+    def lista_ramas(self, p):
+        None
 
     @_("lista_ramas OBJECTID ':' TYPEID DARROW Expresion ';'")
     def lista_ramas(self, p):
