@@ -3,14 +3,14 @@
 (*
   "(*"
    *)"
-*) Estos son comentarios anidados
+Estos son comentarios anidados *) 
 
 
 
-"(*" String
+"(*"
 
-*) Esto es el error de cerrar comentario sin abrirlo
+*) 
 
 
-"*)(*" String
+"*)(*"
 

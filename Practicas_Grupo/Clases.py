@@ -154,6 +154,7 @@ class Bloque(Expresion):
 
 @dataclass
 class RamaCase(Nodo):
+    cast: str = '_no_type'
     nombre_variable: str = '_no_set'
     tipo: str = '_no_set'
     cuerpo: Expresion = None
@@ -183,6 +184,7 @@ class Swicht(Nodo):
 
 @dataclass
 class Nueva(Nodo):
+    cast: str = '_no_type'
     tipo: str = '_no_set'
     def str(self, n):
         resultado = super().str(n)
@@ -386,7 +388,7 @@ class String(Expresion):
     def str(self, n):
         resultado = super().str(n)
         resultado += f'{(n)*" "}_string\n'
-        resultado += f'{(n+2)*" "}{self.valor}\n'
+        resultado += f'{(n+2)*" "}"{self.valor}"\n'
         resultado += f'{(n)*" "}: {self.cast}\n'
         return resultado
     def Tipo(self, ambito):
