@@ -10,14 +10,14 @@ DIRECTORIO = os.path.expanduser("./")
 sys.path.append(DIRECTORIO)
 
 from Lexer import *
-#from Parser import *
+from Parser import *
 from Clases import *
 
-PRACTICA = "01" # Practica que hay que evaluar
+PRACTICA = "02" # Practica que hay que evaluar
 DEBUG = True   # Decir si se lanzan mensajes de debug
 NUMLINEAS = 3   # Numero de lineas que se muestran antes y después de la no coincidencia
 sys.path.append(DIRECTORIO)
-DIR = os.path.join(DIRECTORIO, PRACTICA, 'minimos')
+DIR = os.path.join(DIRECTORIO, PRACTICA, 'grading')
 FICHEROS = os.listdir(DIR)
 TESTS = [fich for fich in FICHEROS
          if os.path.isfile(os.path.join(DIR, fich)) and
@@ -68,7 +68,7 @@ if True:
             g.close()
             j = parser.parse(lexer.tokenize(entrada))
             try:
-                j.Tipo()
+                #j.Tipo()
                 if j and not parser.errores:
                     resultado = '\n'.join([c for c in j.str(0).split('\n')
                                            if c and '#' not in c])
@@ -83,8 +83,8 @@ if True:
                         linea = 0
                         while nuestro[linea:linea+NUMLINEAS] == bien[linea:linea+NUMLINEAS]:
                             linea += 1
-                        print(colored('\n'.join(nuestro[linea:linea+NUMLINEAS]), 'white', 'on_red'))
-                        print(colored('\n'.join(bien[linea:linea+NUMLINEAS]), 'blue', 'on_green'))
+                        #print(colored('\n'.join(nuestro[linea:linea+NUMLINEAS]), 'white', 'on_red'))
+                        #print(colored('\n'.join(bien[linea:linea+NUMLINEAS]), 'blue', 'on_green'))
                         f = open(os.path.join(DIR, fich)+'.nuestro', 'w')
                         g = open(os.path.join(DIR, fich)+'.bien', 'w')
                         f.write(resultado.strip())

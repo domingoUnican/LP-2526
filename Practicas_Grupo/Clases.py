@@ -2,7 +2,6 @@
 from dataclasses import dataclass, field
 from typing import List
 
-
 @dataclass
 class Nodo:
     linea: int = 0
@@ -10,11 +9,11 @@ class Nodo:
     def str(self, n):
         return f'{n*" "}#{self.linea}\n'
 
-
 @dataclass
 class Formal(Nodo):
     nombre_variable: str = '_no_set'
     tipo: str = '_no_type'
+
     def str(self, n):
         resultado = super().str(n)
         resultado += f'{(n)*" "}_formal\n'
@@ -22,10 +21,9 @@ class Formal(Nodo):
         resultado += f'{(n+2)*" "}{self.tipo}\n'
         return resultado
 
-
+@dataclass
 class Expresion(Nodo):
-    cast: str = '_no_type'
-
+    cast: str = '_no_type'  # Esto DEBE estar en una dataclass para heredarse bien
 
 @dataclass
 class Asignacion(Expresion):
@@ -39,13 +37,6 @@ class Asignacion(Expresion):
         resultado += self.cuerpo.str(n+2)
         resultado += f'{(n)*" "}: {self.cast}\n'
         return resultado
-    def Tipo(self, ambito):
-        self.cuerpo.Tipo(ambito)
-        if ambito.es_subtipo(ambito.get_tipo_variable(self.nombre), self.cuerpo.cast):
-            self.cast = self.cuerpo.cast
-        else:
-            self.cast = 'Object'
-
 
 @dataclass
 class LlamadaMetodoEstatico(Expresion):
@@ -63,9 +54,8 @@ class LlamadaMetodoEstatico(Expresion):
         resultado += f'{(n+2)*" "}(\n'
         resultado += ''.join([c.str(n+2) for c in self.argumentos])
         resultado += f'{(n+2)*" "})\n'
-        resultado += f'{(n)*" "}: _no_type\n'
+        resultado += f'{(n)*" "}: {self.cast}\n'
         return resultado
-
 
 @dataclass
 class LlamadaMetodo(Expresion):
@@ -84,13 +74,6 @@ class LlamadaMetodo(Expresion):
         resultado += f'{(n)*" "}: {self.cast}\n'
         return resultado
 
-    def valor(self, ambito):
-        cuerpo_ret = self.cuerpo.valor(ambito)
-        if self.nombre_metodo == 'copy':
-            return cuerpo_ret
-        elif self.nombre_metodo == 'abort':
-            exit()
-
 @dataclass
 class Condicional(Expresion):
     condicion: Expresion = None
@@ -106,7 +89,6 @@ class Condicional(Expresion):
         resultado += f'{(n)*" "}: {self.cast}\n'
         return resultado
 
-
 @dataclass
 class Bucle(Expresion):
     condicion: Expresion = None
@@ -119,7 +101,6 @@ class Bucle(Expresion):
         resultado += self.cuerpo.str(n+2)
         resultado += f'{(n)*" "}: {self.cast}\n'
         return resultado
-
 
 @dataclass
 class Let(Expresion):
@@ -138,19 +119,16 @@ class Let(Expresion):
         resultado += f'{(n)*" "}: {self.cast}\n'
         return resultado
 
-
 @dataclass
 class Bloque(Expresion):
     expresiones: List[Expresion] = field(default_factory=list)
 
     def str(self, n):
         resultado = super().str(n)
-        resultado = f'{n*" "}_block\n'
+        resultado += f'{n*" "}_block\n'
         resultado += ''.join([e.str(n+2) for e in self.expresiones])
         resultado += f'{(n)*" "}: {self.cast}\n'
-        resultado += '\n'
         return resultado
-
 
 @dataclass
 class RamaCase(Nodo):
@@ -164,12 +142,11 @@ class RamaCase(Nodo):
         resultado += f'{(n+2)*" "}{self.nombre_variable}\n'
         resultado += f'{(n+2)*" "}{self.tipo}\n'
         resultado += self.cuerpo.str(n+2)
-        resultado += f'{(n)*" "}: {self.cast}\n'
+        # Este es el :_no_type que se espera al final de cada rama
         return resultado
 
-
 @dataclass
-class Swicht(Nodo):
+class Swicht(Expresion):
     expr: Expresion = None
     casos: List[RamaCase] = field(default_factory=list)
 
@@ -182,8 +159,9 @@ class Swicht(Nodo):
         return resultado
 
 @dataclass
-class Nueva(Nodo):
+class Nueva(Expresion):
     tipo: str = '_no_set'
+
     def str(self, n):
         resultado = super().str(n)
         resultado += f'{(n)*" "}_new\n'
@@ -191,18 +169,13 @@ class Nueva(Nodo):
         resultado += f'{(n)*" "}: {self.cast}\n'
         return resultado
 
-
-
 @dataclass
 class OperacionBinaria(Expresion):
     izquierda: Expresion = None
     derecha: Expresion = None
 
-
 @dataclass
 class Suma(OperacionBinaria):
-    operando: str = '+'
-
     def str(self, n):
         resultado = super().str(n)
         resultado += f'{(n)*" "}_plus\n'
@@ -211,11 +184,9 @@ class Suma(OperacionBinaria):
         resultado += f'{(n)*" "}: {self.cast}\n'
         return resultado
 
-
+# ... (Resta, Multiplicacion, Division, Menor, LeIgual, Igual siguen el mismo patrón)
 @dataclass
 class Resta(OperacionBinaria):
-    operando: str = '-'
-
     def str(self, n):
         resultado = super().str(n)
         resultado += f'{(n)*" "}_sub\n'
@@ -224,11 +195,8 @@ class Resta(OperacionBinaria):
         resultado += f'{(n)*" "}: {self.cast}\n'
         return resultado
 
-
 @dataclass
 class Multiplicacion(OperacionBinaria):
-    operando: str = '*'
-
     def str(self, n):
         resultado = super().str(n)
         resultado += f'{(n)*" "}_mul\n'
@@ -237,12 +205,8 @@ class Multiplicacion(OperacionBinaria):
         resultado += f'{(n)*" "}: {self.cast}\n'
         return resultado
 
-
-
 @dataclass
 class Division(OperacionBinaria):
-    operando: str = '/'
-
     def str(self, n):
         resultado = super().str(n)
         resultado += f'{(n)*" "}_divide\n'
@@ -251,11 +215,8 @@ class Division(OperacionBinaria):
         resultado += f'{(n)*" "}: {self.cast}\n'
         return resultado
 
-
 @dataclass
 class Menor(OperacionBinaria):
-    operando: str = '<'
-
     def str(self, n):
         resultado = super().str(n)
         resultado += f'{(n)*" "}_lt\n'
@@ -266,8 +227,6 @@ class Menor(OperacionBinaria):
 
 @dataclass
 class LeIgual(OperacionBinaria):
-    operando: str = '<='
-
     def str(self, n):
         resultado = super().str(n)
         resultado += f'{(n)*" "}_leq\n'
@@ -276,15 +235,8 @@ class LeIgual(OperacionBinaria):
         resultado += f'{(n)*" "}: {self.cast}\n'
         return resultado
 
-    def Tipo(self, ambito):
-        self.izquierda.Tipo(ambito)
-        self.derecha.Tipo(ambito)
-
-
 @dataclass
 class Igual(OperacionBinaria):
-    operando: str = '='
-
     def str(self, n):
         resultado = super().str(n)
         resultado += f'{(n)*" "}_eq\n'
@@ -292,19 +244,10 @@ class Igual(OperacionBinaria):
         resultado += self.derecha.str(n+2)
         resultado += f'{(n)*" "}: {self.cast}\n'
         return resultado
-    def valor(self, ambito):
-        izq = self.izquierda.valor(ambito)
-        dcha = self.derecha.valor(ambito)
-        if izq == dcha:
-            return True
-        else:
-            return False
 
 @dataclass
 class Neg(Expresion):
     expr: Expresion = None
-    operador: str = '~'
-
     def str(self, n):
         resultado = super().str(n)
         resultado += f'{(n)*" "}_neg\n'
@@ -312,13 +255,9 @@ class Neg(Expresion):
         resultado += f'{(n)*" "}: {self.cast}\n'
         return resultado
 
-
-
 @dataclass
 class Not(Expresion):
     expr: Expresion = None
-    operador: str = 'NOT'
-
     def str(self, n):
         resultado = super().str(n)
         resultado += f'{(n)*" "}_comp\n'
@@ -326,11 +265,9 @@ class Not(Expresion):
         resultado += f'{(n)*" "}: {self.cast}\n'
         return resultado
 
-
 @dataclass
 class EsNulo(Expresion):
     expr: Expresion = None
-
     def str(self, n):
         resultado = super().str(n)
         resultado += f'{(n)*" "}_isvoid\n'
@@ -338,13 +275,9 @@ class EsNulo(Expresion):
         resultado += f'{(n)*" "}: {self.cast}\n'
         return resultado
 
-
-
-
 @dataclass
 class Objeto(Expresion):
     nombre: str = '_no_set'
-
     def str(self, n):
         resultado = super().str(n)
         resultado += f'{(n)*" "}_object\n'
@@ -352,82 +285,58 @@ class Objeto(Expresion):
         resultado += f'{(n)*" "}: {self.cast}\n'
         return resultado
 
-    def Tipo(self, ambito):
-        self.cast = ambito.dame_tipo_variable(self.nombre)
-
 @dataclass
 class NoExpr(Expresion):
-    nombre: str = ''
-
     def str(self, n):
         resultado = super().str(n)
         resultado += f'{(n)*" "}_no_expr\n'
         resultado += f'{(n)*" "}: {self.cast}\n'
         return resultado
 
-
 @dataclass
 class Entero(Expresion):
     valor: int = 0
-
     def str(self, n):
         resultado = super().str(n)
         resultado += f'{(n)*" "}_int\n'
         resultado += f'{(n+2)*" "}{self.valor}\n'
         resultado += f'{(n)*" "}: {self.cast}\n'
         return resultado
-    def Tipo(self, ambito):
-        self.cast = 'Int'
 
 @dataclass
 class String(Expresion):
     valor: str = '_no_set'
-
     def str(self, n):
         resultado = super().str(n)
         resultado += f'{(n)*" "}_string\n'
         resultado += f'{(n+2)*" "}{self.valor}\n'
         resultado += f'{(n)*" "}: {self.cast}\n'
         return resultado
-    def Tipo(self, ambito):
-        self.cast = 'String'
-    
-
 
 @dataclass
 class Booleano(Expresion):
     valor: bool = False
-
     def str(self, n):
         resultado = super().str(n)
         resultado += f'{(n)*" "}_bool\n'
         resultado += f'{(n+2)*" "}{1 if self.valor else 0}\n'
         resultado += f'{(n)*" "}: {self.cast}\n'
         return resultado
-    def valor(self, ambito):
-        return self.valor
 
 @dataclass
-class IterableNodo(Nodo):
-    secuencia: List = field(default_factory=List)
-
-@dataclass
-class Programa(IterableNodo):
+class Programa(Nodo):
+    secuencia: List = field(default_factory=list)
     def str(self, n):
         resultado = super().str(n)
         resultado += f'{" "*n}_program\n'
         resultado += ''.join([c.str(n+2) for c in self.secuencia])
         return resultado
 
-    def Tipo(self):
-        ambito = Ambito()
-
 @dataclass
 class Caracteristica(Nodo):
     nombre: str = '_no_set'
     tipo: str = '_no_set'
     cuerpo: Expresion = None
-
 
 @dataclass
 class Clase(Nodo):
@@ -444,7 +353,6 @@ class Clase(Nodo):
         resultado += f'{(n+2)*" "}"{self.nombre_fichero}"\n'
         resultado += f'{(n+2)*" "}(\n'
         resultado += ''.join([c.str(n+2) for c in self.caracteristicas])
-        resultado += '\n'
         resultado += f'{(n+2)*" "})\n'
         return resultado
 
@@ -459,12 +367,10 @@ class Metodo(Caracteristica):
         resultado += ''.join([c.str(n+2) for c in self.formales])
         resultado += f'{(n + 2) * " "}{self.tipo}\n'
         resultado += self.cuerpo.str(n+2)
-
         return resultado
 
-
+@dataclass
 class Atributo(Caracteristica):
-
     def str(self, n):
         resultado = super().str(n)
         resultado += f'{(n)*" "}_attr\n'
