@@ -165,12 +165,12 @@ class RamaCase(Nodo):
         resultado += f'{(n+2)*" "}{self.nombre_variable}\n'
         resultado += f'{(n+2)*" "}{self.tipo}\n'
         resultado += self.cuerpo.str(n+2)
-        resultado += f'{(n)*" "}: {self.cast}\n'
         return resultado
 
 
 @dataclass
 class Swicht(Nodo):
+    cast: str = '_no_type'
     expr: Expresion = None
     casos: List[RamaCase] = field(default_factory=list)
 
@@ -388,7 +388,14 @@ class String(Expresion):
     def str(self, n):
         resultado = super().str(n)
         resultado += f'{(n)*" "}_string\n'
-        resultado += f'{(n+2)*" "}"{self.valor}"\n'
+        escaped = (self.valor
+                   .replace('\\', '\\\\')
+                   .replace('\n', '\\n')
+                   .replace('\t', '\\t')
+                   .replace('\b', '\\b')
+                   .replace('\f', '\\f')
+                   .replace('\0', '\\0'))
+        resultado += f'{(n+2)*" "}"{escaped}"\n'
         resultado += f'{(n)*" "}: {self.cast}\n'
         return resultado
     def Tipo(self, ambito):
