@@ -7,7 +7,7 @@ from termcolor import colored ## Para coloredear la salida en la terminal
 #init()
 
 
-DIRECTORIO = os.path.expanduser("C:\AA_INGENIERIA_INFORMATICA\CUARTO\LENGUAJES_PROGRAMACION\Practicas\LP-2526\Practicas_Grupo")
+DIRECTORIO = os.path.expanduser("./")
 sys.path.append(DIRECTORIO)
 
 from Lexer import *
@@ -24,7 +24,7 @@ TESTS = [fich for fich in FICHEROS
          if os.path.isfile(os.path.join(DIR, fich)) and
          re.search(r"^[a-zA-Z].*\.(cool|test|cl)$",fich)]
 TESTS.sort()
-#TESTS = ["escapedunprintables.cool"]
+TESTS = ["casenoexpr.test"]
 
 if True:
     for fich in TESTS:
