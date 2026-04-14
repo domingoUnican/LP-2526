@@ -54,6 +54,8 @@ class CoolParser(Parser):
 
     @_("lista_clases error")
     def Programa(self, p):
+        if self.errores:
+            self.errores.pop()
         return Programa(
             secuencia=p.lista_clases,
             linea=p.lista_clases[-1].linea if p.lista_clases else 0
@@ -473,7 +475,11 @@ class CoolParser(Parser):
         )]
     @_("OBJECTID error DARROW Expresion ';'")
     def lista_ramas(self, p):
-        None
+        return []
+
+    @_("lista_ramas OBJECTID error DARROW Expresion ';'")
+    def lista_ramas(self, p):
+        return p.lista_ramas
 
     @_("lista_ramas OBJECTID ':' TYPEID DARROW Expresion ';'")
     def lista_ramas(self, p):
