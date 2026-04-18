@@ -45,6 +45,17 @@ class CoolParser(Parser):
             # Error al final del archivo
             self.errores.append(f'"{self.nombre_fichero}", line 0: syntax error at or near EOF')
 
+    def parse(self, tokens):
+        # Ejecutamos el parse normal de SLY
+        resultado = super().parse(tokens)
+        
+        # Si SLY falla catastróficamente y devuelve None, 
+        # devolvemos un Programa vacío para que no explote j.Tipo()
+        if resultado is None:
+            return Programa(secuencia=[])
+            
+        return resultado
+
     # Estructura Principal del Programa
 
     @_("clase_list")
@@ -59,15 +70,29 @@ class CoolParser(Parser):
     def clase_list(self, p):
         return p.clase_list + [p.Clase]
     
-
-    @_("CLASS TYPEID hereda '{' feature_list '}'")
+    # Regla para capturar la línea exacta de la llave de cierre
+    @_("'}'")
+    def rbrace(self, p):
+        return p.lineno
+    
+    @_("CLASS TYPEID hereda '{' feature_list rbrace")
     def Clase(self, p):
         return Clase(
             nombre=p.TYPEID,
             padre=p.hereda,
             nombre_fichero=self.nombre_fichero,
             caracteristicas=p.feature_list,
-            linea=p.lineno
+            linea=p.rbrace
+        )
+    
+    @_("CLASS TYPEID hereda '{' rbrace")
+    def Clase(self, p):
+        return Clase(
+            nombre=p.TYPEID,
+            padre=p.hereda,
+            nombre_fichero=self.nombre_fichero,
+            caracteristicas=[],
+            linea=p.rbrace
         )
 
     @_("INHERITS TYPEID")
