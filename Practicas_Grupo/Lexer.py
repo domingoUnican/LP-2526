@@ -1,11 +1,8 @@
-# coding: utf-8
-
 from sly import Lexer
 
 # Estados auxiliares o sub-lexers para manejar casos específicos como strings y comentarios anidados.
 
 class RecuperarString(Lexer):
-    """Estado de recuperación: ignora todo hasta cerrar el string roto."""
     tokens = {}
     
     @_(r'\"')
@@ -27,7 +24,6 @@ class RecuperarString(Lexer):
 
 
 class MatchingString(Lexer):
-    """Estado para el análisis de strings válidos e inválidos en progreso."""
     tokens = {}
     
     @_(r'\t')
@@ -54,7 +50,7 @@ class MatchingString(Lexer):
                 self.begin(RecuperarString)
                 return t
             val = repr(t.value)[1:-1]
-            # s05 test octales en vez de hexadecimales
+           
             octal_val = oct(ord(t.value))[2:].zfill(3)
             val = f'\\{octal_val}'
 
@@ -144,7 +140,6 @@ class MatchingString(Lexer):
 
 
 class Comentario(Lexer):
-    """Estado para manejar comentarios multilinea anidados."""
     tokens = {}
     
     @_(r'\(\*')
@@ -304,7 +299,6 @@ class CoolLexer(Lexer):
         self.index += 1
 
     def tokenize(self, text, *args, **kwargs):
-        """Reescribimos tokenize para manejar el EOF según el estado."""
         for tok in super().tokenize(text, *args, **kwargs):
             yield tok
             
@@ -327,7 +321,6 @@ class CoolLexer(Lexer):
             self.begin(CoolLexer)
         
     def salida(self, texto):
-        """Procesa el texto y devuelve una lista con el output formateado."""
         list_strings = []
         for token in self.tokenize(texto): 
             result = f'#{token.lineno} {token.type} '

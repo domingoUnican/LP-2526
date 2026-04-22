@@ -9,7 +9,6 @@ class CoolParser(Parser):
     tokens = CoolLexer.tokens
     debugfile = "salida.out"
 
-    # Precedencia de operadores de menor a mayor para resolver ambigüedades
     precedence = (
         ('right', 'ASSIGN'),
         ('left', 'NOT'),
@@ -115,7 +114,6 @@ class CoolParser(Parser):
 
     @_("feature_list error ';'", "error ';'")
     def feature_list(self, p):
-        #self.errok() # Indica a SLY que ya puede volver a reportar errores
         if hasattr(p, 'feature_list'):
             return p.feature_list
         return []
@@ -170,7 +168,6 @@ class CoolParser(Parser):
         return Formal(nombre_variable=p.OBJECTID, tipo=p.TYPEID, linea=p.lineno)
 
     # Expresiones
-
     @_("OBJECTID ASSIGN expresion")
     def expresion(self, p):
         return Asignacion(nombre=p.OBJECTID, cuerpo=p.expresion, linea=p.lineno)
